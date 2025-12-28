@@ -1,6 +1,6 @@
 {
   "name": "react-datepicker-bkrdmrcioglu",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Modern, customizable and user-friendly React DatePicker component with dark mode and multi-language support. Built with Next.js and Tailwind CSS.",
   "main": "components/index.ts",
   "types": "components/index.ts",
