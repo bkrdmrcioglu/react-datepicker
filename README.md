@@ -1,45 +1,73 @@
 # React DatePicker
 
-Modern, özelleştirilebilir ve kullanıcı dostu React DatePicker komponenti. Next.js ve Tailwind CSS ile geliştirilmiştir.
+Modern, customizable, and user-friendly React DatePicker component. Built with Next.js and Tailwind CSS.
 
-## 🚀 Özellikler
+[![View on GitHub](https://img.shields.io/badge/GitHub-View%20on%20GitHub-blue?logo=github)](https://github.com/bkrdmrcioglu/react-datepicker)
 
-- ✅ Modern ve şık tasarım
-- ✅ **Dark Mode** - Tam karanlık mod desteği
-- ✅ **11 Dil Desteği** - English, Türkçe, Deutsch, Français, Español, Italiano, Português, Русский, 日本語, 中文, العربية
-- ✅ Tarih seçimi
-- ✅ Tarih ve saat seçimi
-- ✅ Tarih aralığı seçimi (DateRangePicker)
-- ✅ Min/Max tarih kısıtlaması
-- ✅ Devre dışı bırakılabilir
-- ✅ TypeScript desteği
-- ✅ Tamamen özelleştirilebilir
-- ✅ Responsive tasarım
+## 🚀 Features
 
-## 📦 Kurulum
+- ✅ Modern and elegant design
+- ✅ **Dark Mode** - Full dark mode support
+- ✅ **11 Language Support** - English, Turkish, German, French, Spanish, Italian, Portuguese, Russian, Japanese, Chinese, Arabic
+- ✅ Date selection
+- ✅ Date and time selection
+- ✅ Date range selection (DateRangePicker)
+- ✅ Min/Max date constraints
+- ✅ Disableable
+- ✅ TypeScript support
+- ✅ Fully customizable
+- ✅ Responsive design
+
+## 📦 Installation
+
+### Install via NPM
+
+```bash
+npm install react-datepicker-bkrdmrcioglu
+# or
+yarn add react-datepicker-bkrdmrcioglu
+# or
+pnpm add react-datepicker-bkrdmrcioglu
+```
+
+### Requirements
+
+This package uses Tailwind CSS. You must have Tailwind CSS installed in your project:
+
+```bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
+Add this to your `tailwind.config.js` file:
+
+```js
+module.exports = {
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./node_modules/react-datepicker-bkrdmrcioglu/**/*.{js,jsx,ts,tsx}"
+  ],
+  darkMode: 'class', // For dark mode
+  // ... your other settings
+}
+```
+
+## 🏃 Development (For This Repo)
 
 ```bash
 npm install
-# veya
-yarn install
-```
-
-## 🏃 Geliştirme
-
-```bash
 npm run dev
-# veya
-yarn dev
 ```
 
-Tarayıcınızda [http://localhost:3000](http://localhost:3000) adresini açın.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## 📖 Kullanım
+## 📖 Usage
 
-### Temel Kullanım
+### Basic Usage
 
 ```tsx
-import DatePicker from '@/components/DatePicker';
+import { DatePicker } from 'react-datepicker-bkrdmrcioglu';
+import { useState } from 'react';
 
 function MyComponent() {
   const [date, setDate] = useState<Date | null>(null);
@@ -54,55 +82,58 @@ function MyComponent() {
 }
 ```
 
-### Dil Desteği
+### Language Support
 
 ```tsx
-// İngilizce (varsayılan)
+import { DatePicker } from 'react-datepicker-bkrdmrcioglu';
+import type { Language } from 'react-datepicker-bkrdmrcioglu';
+
+// English (default)
 <DatePicker language="en" />
 
-// Türkçe
+// Turkish
 <DatePicker language="tr" />
 
-// Almanca
+// German
 <DatePicker language="de" />
 
-// Fransızca
+// French
 <DatePicker language="fr" />
 
-// İspanyolca
+// Spanish
 <DatePicker language="es" />
 
-// İtalyanca
+// Italian
 <DatePicker language="it" />
 
-// Portekizce
+// Portuguese
 <DatePicker language="pt" />
 
-// Rusça
+// Russian
 <DatePicker language="ru" />
 
-// Japonca
+// Japanese
 <DatePicker language="ja" />
 
-// Çince
+// Chinese
 <DatePicker language="zh" />
 
-// Arapça
+// Arabic
 <DatePicker language="ar" />
 ```
 
-### Tarih ve Saat Seçimi
+### Date and Time Selection
 
 ```tsx
 <DatePicker
   value={date}
   onChange={setDate}
   showTime={true}
-  placeholder="Tarih ve saat seçin..."
+  placeholder="Select date and time..."
 />
 ```
 
-### Min/Max Tarih Kısıtlaması
+### Min/Max Date Constraints
 
 ```tsx
 const minDate = new Date();
@@ -118,10 +149,11 @@ maxDate.setDate(maxDate.getDate() + 30);
 />
 ```
 
-### Tarih Aralığı Seçimi
+### Date Range Selection
 
 ```tsx
-import DateRangePicker from '@/components/DateRangePicker';
+import { DateRangePicker } from 'react-datepicker-bkrdmrcioglu';
+import { useState } from 'react';
 
 function MyComponent() {
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -140,59 +172,72 @@ function MyComponent() {
 }
 ```
 
-## 🔧 API Referansı
+## 🔧 API Reference
 
 ### DatePicker Props
 
-| Prop | Tip | Varsayılan | Açıklama |
-|------|-----|------------|----------|
-| `value` | `Date \| null` | `undefined` | Seçili tarih |
-| `onChange` | `(date: Date \| null) => void` | `undefined` | Tarih değiştiğinde çağrılır |
-| `placeholder` | `string` | `"Tarih seçin..."` | Input placeholder metni |
-| `minDate` | `Date` | `undefined` | Minimum seçilebilir tarih |
-| `maxDate` | `Date` | `undefined` | Maksimum seçilebilir tarih |
-| `disabled` | `boolean` | `false` | Devre dışı bırakma |
-| `className` | `string` | `""` | Ek CSS sınıfları |
-| `showTime` | `boolean` | `false` | Saat seçimi göster |
-| `format` | `string` | `"DD/MM/YYYY"` | Tarih formatı |
-| `language` | `Language` | `"en"` | Dil seçimi (en, tr, de, fr, es, it, pt, ru, ja, zh, ar) |
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `Date \| null` | `undefined` | Selected date |
+| `onChange` | `(date: Date \| null) => void` | `undefined` | Called when date changes |
+| `placeholder` | `string` | `"Select date..."` | Input placeholder text |
+| `minDate` | `Date` | `undefined` | Minimum selectable date |
+| `maxDate` | `Date` | `undefined` | Maximum selectable date |
+| `disabled` | `boolean` | `false` | Disable the picker |
+| `className` | `string` | `""` | Additional CSS classes |
+| `showTime` | `boolean` | `false` | Show time selection |
+| `format` | `string` | `"DD/MM/YYYY"` | Date format |
+| `language` | `Language` | `"en"` | Language selection (en, tr, de, fr, es, it, pt, ru, ja, zh, ar) |
 
 ### DateRangePicker Props
 
-| Prop | Tip | Varsayılan | Açıklama |
-|------|-----|------------|----------|
-| `startDate` | `Date \| null` | `undefined` | Başlangıç tarihi |
-| `endDate` | `Date \| null` | `undefined` | Bitiş tarihi |
-| `onChange` | `(start: Date \| null, end: Date \| null) => void` | `undefined` | Tarih değiştiğinde çağrılır |
-| `placeholder` | `string` | `"Tarih aralığı seçin..."` | Placeholder metni |
-| `minDate` | `Date` | `undefined` | Minimum seçilebilir tarih |
-| `maxDate` | `Date` | `undefined` | Maksimum seçilebilir tarih |
-| `disabled` | `boolean` | `false` | Devre dışı bırakma |
-| `className` | `string` | `""` | Ek CSS sınıfları |
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `startDate` | `Date \| null` | `undefined` | Start date |
+| `endDate` | `Date \| null` | `undefined` | End date |
+| `onChange` | `(start: Date \| null, end: Date \| null) => void` | `undefined` | Called when dates change |
+| `placeholder` | `string` | `"Select date range..."` | Placeholder text |
+| `minDate` | `Date` | `undefined` | Minimum selectable date |
+| `maxDate` | `Date` | `undefined` | Maximum selectable date |
+| `disabled` | `boolean` | `false` | Disable the picker |
+| `className` | `string` | `""` | Additional CSS classes |
 
-## 🎨 Özelleştirme
+## 🎨 Customization
 
-Komponentler Tailwind CSS kullanılarak oluşturulmuştur. Stilleri özelleştirmek için `components/DatePicker.tsx` dosyasındaki className'leri değiştirebilirsiniz.
+Components are built using Tailwind CSS. You can customize the styles by modifying the className properties in the `components/DatePicker.tsx` file.
 
 ### Dark Mode
 
-Dark mode otomatik olarak sistem tercihine göre ayarlanır veya `DarkModeToggle` komponenti ile manuel olarak kontrol edilebilir. Tüm komponentler dark mode'u destekler.
+Dark mode is automatically set based on system preference or can be controlled manually using the `DarkModeToggle` component. All components support dark mode.
+
+**Important:** You need to add the `dark` class to the HTML element for dark mode:
 
 ```tsx
-import DarkModeToggle from '@/components/DarkModeToggle';
+import { DarkModeToggle } from 'react-datepicker-bkrdmrcioglu';
 
 function MyComponent() {
   return <DarkModeToggle />;
 }
 ```
 
-### Dil Seçici
-
-Dil seçimi için `LanguageSelector` komponentini kullanabilirsiniz:
+To manually control dark mode:
 
 ```tsx
-import LanguageSelector from '@/components/LanguageSelector';
-import { type Language } from '@/lib/i18n';
+// Enable dark mode
+document.documentElement.classList.add('dark');
+
+// Disable dark mode
+document.documentElement.classList.remove('dark');
+```
+
+### Language Selector
+
+You can use the `LanguageSelector` component for language selection:
+
+```tsx
+import { LanguageSelector, DatePicker } from 'react-datepicker-bkrdmrcioglu';
+import type { Language } from 'react-datepicker-bkrdmrcioglu';
+import { useState } from 'react';
 
 function MyComponent() {
   const [language, setLanguage] = useState<Language>('en');
@@ -206,18 +251,18 @@ function MyComponent() {
 }
 ```
 
-## 📝 Lisans
+## 📝 License
 
-MIT License - Özgürce kullanabilirsiniz.
+MIT License - Feel free to use it.
 
-## 🤝 Katkıda Bulunma
+## 🤝 Contributing
 
-Katkılarınızı bekliyoruz! Lütfen bir issue açın veya pull request gönderin.
+We welcome your contributions! Please open an issue or submit a pull request.
 
-## 📧 İletişim
+## 📧 Contact
 
-Sorularınız için GitHub Issues kullanabilirsiniz.
+You can use GitHub Issues for your questions.
 
 ---
 
-⭐ Bu projeyi beğendiyseniz yıldız vermeyi unutmayın!
+⭐ If you liked this project, don't forget to give it a star!

@@ -14,6 +14,20 @@ export interface Translations {
   hours: string;
   minutes: string;
   ok: string;
+  quickSelect: {
+    today: string;
+    tomorrow: string;
+    yesterday: string;
+    thisWeek: string;
+    lastWeek: string;
+    nextWeek: string;
+    thisMonth: string;
+    lastMonth: string;
+    nextMonth: string;
+    in7Days: string;
+    in30Days: string;
+  };
+  week: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -33,7 +47,21 @@ export const translations: Record<Language, Translations> = {
     endDate: 'End',
     hours: 'Hours',
     minutes: 'Minutes',
-    ok: 'OK'
+    ok: 'OK',
+    quickSelect: {
+      today: 'Today',
+      tomorrow: 'Tomorrow',
+      yesterday: 'Yesterday',
+      thisWeek: 'This Week',
+      lastWeek: 'Last Week',
+      nextWeek: 'Next Week',
+      thisMonth: 'This Month',
+      lastMonth: 'Last Month',
+      nextMonth: 'Next Month',
+      in7Days: 'In 7 Days',
+      in30Days: 'In 30 Days'
+    },
+    week: 'Week'
   },
   tr: {
     months: [
@@ -51,7 +79,21 @@ export const translations: Record<Language, Translations> = {
     endDate: 'Bitiş',
     hours: 'Saat',
     minutes: 'Dakika',
-    ok: 'Tamam'
+    ok: 'Tamam',
+    quickSelect: {
+      today: 'Bugün',
+      tomorrow: 'Yarın',
+      yesterday: 'Dün',
+      thisWeek: 'Bu Hafta',
+      lastWeek: 'Geçen Hafta',
+      nextWeek: 'Gelecek Hafta',
+      thisMonth: 'Bu Ay',
+      lastMonth: 'Geçen Ay',
+      nextMonth: 'Gelecek Ay',
+      in7Days: '7 Gün Sonra',
+      in30Days: '30 Gün Sonra'
+    },
+    week: 'Hafta'
   },
   de: {
     months: [
@@ -69,7 +111,21 @@ export const translations: Record<Language, Translations> = {
     endDate: 'Ende',
     hours: 'Stunden',
     minutes: 'Minuten',
-    ok: 'OK'
+    ok: 'OK',
+    quickSelect: {
+      today: 'Heute',
+      tomorrow: 'Morgen',
+      yesterday: 'Gestern',
+      thisWeek: 'Diese Woche',
+      lastWeek: 'Letzte Woche',
+      nextWeek: 'Nächste Woche',
+      thisMonth: 'Diesen Monat',
+      lastMonth: 'Letzten Monat',
+      nextMonth: 'Nächsten Monat',
+      in7Days: 'In 7 Tagen',
+      in30Days: 'In 30 Tagen'
+    },
+    week: 'Woche'
   },
   fr: {
     months: [
@@ -87,7 +143,21 @@ export const translations: Record<Language, Translations> = {
     endDate: 'Fin',
     hours: 'Heures',
     minutes: 'Minutes',
-    ok: 'OK'
+    ok: 'OK',
+    quickSelect: {
+      today: "Aujourd'hui",
+      tomorrow: 'Demain',
+      yesterday: 'Hier',
+      thisWeek: 'Cette Semaine',
+      lastWeek: 'Semaine Dernière',
+      nextWeek: 'Semaine Prochaine',
+      thisMonth: 'Ce Mois',
+      lastMonth: 'Mois Dernier',
+      nextMonth: 'Mois Prochain',
+      in7Days: 'Dans 7 Jours',
+      in30Days: 'Dans 30 Jours'
+    },
+    week: 'Semaine'
   },
   es: {
     months: [
@@ -105,7 +175,21 @@ export const translations: Record<Language, Translations> = {
     endDate: 'Fin',
     hours: 'Horas',
     minutes: 'Minutos',
-    ok: 'OK'
+    ok: 'OK',
+    quickSelect: {
+      today: 'Hoy',
+      tomorrow: 'Mañana',
+      yesterday: 'Ayer',
+      thisWeek: 'Esta Semana',
+      lastWeek: 'Semana Pasada',
+      nextWeek: 'Próxima Semana',
+      thisMonth: 'Este Mes',
+      lastMonth: 'Mes Pasado',
+      nextMonth: 'Próximo Mes',
+      in7Days: 'En 7 Días',
+      in30Days: 'En 30 Días'
+    },
+    week: 'Semana'
   },
   it: {
     months: [
@@ -123,7 +207,21 @@ export const translations: Record<Language, Translations> = {
     endDate: 'Fine',
     hours: 'Ore',
     minutes: 'Minuti',
-    ok: 'OK'
+    ok: 'OK',
+    quickSelect: {
+      today: 'Oggi',
+      tomorrow: 'Domani',
+      yesterday: 'Ieri',
+      thisWeek: 'Questa Settimana',
+      lastWeek: 'Settimana Scorsa',
+      nextWeek: 'Prossima Settimana',
+      thisMonth: 'Questo Mese',
+      lastMonth: 'Mese Scorso',
+      nextMonth: 'Prossimo Mese',
+      in7Days: 'Tra 7 Giorni',
+      in30Days: 'Tra 30 Giorni'
+    },
+    week: 'Settimana'
   },
   pt: {
     months: [
@@ -141,7 +239,21 @@ export const translations: Record<Language, Translations> = {
     endDate: 'Fim',
     hours: 'Horas',
     minutes: 'Minutos',
-    ok: 'OK'
+    ok: 'OK',
+    quickSelect: {
+      today: 'Hoje',
+      tomorrow: 'Amanhã',
+      yesterday: 'Ontem',
+      thisWeek: 'Esta Semana',
+      lastWeek: 'Semana Passada',
+      nextWeek: 'Próxima Semana',
+      thisMonth: 'Este Mês',
+      lastMonth: 'Mês Passado',
+      nextMonth: 'Próximo Mês',
+      in7Days: 'Em 7 Dias',
+      in30Days: 'Em 30 Dias'
+    },
+    week: 'Semana'
   },
   ru: {
     months: [
@@ -159,7 +271,21 @@ export const translations: Record<Language, Translations> = {
     endDate: 'Конец',
     hours: 'Часы',
     minutes: 'Минуты',
-    ok: 'ОК'
+    ok: 'ОК',
+    quickSelect: {
+      today: 'Сегодня',
+      tomorrow: 'Завтра',
+      yesterday: 'Вчера',
+      thisWeek: 'Эта Неделя',
+      lastWeek: 'Прошлая Неделя',
+      nextWeek: 'Следующая Неделя',
+      thisMonth: 'Этот Месяц',
+      lastMonth: 'Прошлый Месяц',
+      nextMonth: 'Следующий Месяц',
+      in7Days: 'Через 7 Дней',
+      in30Days: 'Через 30 Дней'
+    },
+    week: 'Неделя'
   },
   ja: {
     months: [
@@ -177,7 +303,21 @@ export const translations: Record<Language, Translations> = {
     endDate: '終了',
     hours: '時',
     minutes: '分',
-    ok: 'OK'
+    ok: 'OK',
+    quickSelect: {
+      today: '今日',
+      tomorrow: '明日',
+      yesterday: '昨日',
+      thisWeek: '今週',
+      lastWeek: '先週',
+      nextWeek: '来週',
+      thisMonth: '今月',
+      lastMonth: '先月',
+      nextMonth: '来月',
+      in7Days: '7日後',
+      in30Days: '30日後'
+    },
+    week: '週'
   },
   zh: {
     months: [
@@ -195,7 +335,21 @@ export const translations: Record<Language, Translations> = {
     endDate: '结束',
     hours: '小时',
     minutes: '分钟',
-    ok: '确定'
+    ok: '确定',
+    quickSelect: {
+      today: '今天',
+      tomorrow: '明天',
+      yesterday: '昨天',
+      thisWeek: '本周',
+      lastWeek: '上周',
+      nextWeek: '下周',
+      thisMonth: '本月',
+      lastMonth: '上月',
+      nextMonth: '下月',
+      in7Days: '7天后',
+      in30Days: '30天后'
+    },
+    week: '周'
   },
   ar: {
     months: [
@@ -213,7 +367,21 @@ export const translations: Record<Language, Translations> = {
     endDate: 'النهاية',
     hours: 'ساعات',
     minutes: 'دقائق',
-    ok: 'موافق'
+    ok: 'موافق',
+    quickSelect: {
+      today: 'اليوم',
+      tomorrow: 'غداً',
+      yesterday: 'أمس',
+      thisWeek: 'هذا الأسبوع',
+      lastWeek: 'الأسبوع الماضي',
+      nextWeek: 'الأسبوع القادم',
+      thisMonth: 'هذا الشهر',
+      lastMonth: 'الشهر الماضي',
+      nextMonth: 'الشهر القادم',
+      in7Days: 'بعد 7 أيام',
+      in30Days: 'بعد 30 يوماً'
+    },
+    week: 'أسبوع'
   }
 };
 
