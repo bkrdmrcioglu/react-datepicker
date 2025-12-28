@@ -3,6 +3,7 @@
 Modern, customizable, and user-friendly React DatePicker component. Built with Next.js and Tailwind CSS.
 
 [![View on GitHub](https://img.shields.io/badge/GitHub-View%20on%20GitHub-blue?logo=github)](https://github.com/bkrdmrcioglu/react-datepicker)
+[![Live Demo](https://img.shields.io/badge/Demo-Live%20Demo-green?logo=vercel)](https://react-datepicker-mu.vercel.app)
 
 ## 🚀 Features
 
