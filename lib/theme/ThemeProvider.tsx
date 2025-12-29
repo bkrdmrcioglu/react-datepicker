@@ -29,6 +29,7 @@ export function ThemeProvider({ children, defaultTheme = 'default' }: ThemeProvi
   const [currentPreset, setCurrentPreset] = useState<ThemePreset>('default');
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof defaultTheme === 'string') {
+      if (defaultTheme === 'custom') return themes.default;
       return themes[defaultTheme];
     }
     return defaultTheme;
@@ -36,8 +37,13 @@ export function ThemeProvider({ children, defaultTheme = 'default' }: ThemeProvi
 
   const setTheme = (newTheme: Theme | ThemePreset) => {
     if (typeof newTheme === 'string') {
-      setThemeState(themes[newTheme]);
-      setCurrentPreset(newTheme);
+      if (newTheme === 'custom') {
+        setThemeState(themes.default);
+        setCurrentPreset('custom');
+      } else {
+        setThemeState(themes[newTheme]);
+        setCurrentPreset(newTheme);
+      }
     } else {
       setThemeState(newTheme);
       setCurrentPreset('custom');
