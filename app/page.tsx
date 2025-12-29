@@ -255,6 +255,7 @@ export default function Home() {
                 onChange={setCustomDaysDate}
                 customDays={customDays}
                 language={language}
+                showQuickSelect={false}
               />
             </div>
             {customDaysDate && (
