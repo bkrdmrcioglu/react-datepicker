@@ -1,15 +1,15 @@
-'use client';
-
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { getTranslations, type Language } from '../lib/i18n';
+import './styles.css';
 
 export interface CustomDay {
   date: Date;
   label?: string;
   className?: string;
   color?: string;
+  disabled?: boolean;
 }
 
 export interface DatePickerProps {
@@ -29,9 +29,15 @@ export interface DatePickerProps {
   usePortal?: boolean;
   portalContainer?: HTMLElement;
   animationDuration?: number;
+  initialMonth?: Date;
 }
 
-export default function DatePicker({
+export interface DatePickerHandle {
+  openCalendar: () => void;
+  closeCalendar: () => void;
+}
+
+const DatePicker = forwardRef<DatePickerHandle, DatePickerProps>(({
   value,
   onChange,
   placeholder,
@@ -47,12 +53,13 @@ export default function DatePicker({
   customDays = [],
   usePortal = false,
   portalContainer,
-  animationDuration = 200
-}: DatePickerProps) {
+  animationDuration = 200,
+  initialMonth
+}, ref) => {
   const t = getTranslations(language);
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(initialMonth || value || new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(value || null);
   const [focusedDate, setFocusedDate] = useState<Date | null>(null);
   const [time, setTime] = useState({ hours: 0, minutes: 0 });
@@ -60,6 +67,11 @@ export default function DatePicker({
   const inputRef = useRef<HTMLInputElement>(null);
   const calendarRef = useRef<HTMLDivElement>(null);
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    openCalendar: () => handleOpen(),
+    closeCalendar: () => handleClose()
+  }));
 
   // Portal setup
   useEffect(() => {
@@ -87,11 +99,11 @@ export default function DatePicker({
 
   // Calculate position for portal
   const getPosition = useCallback(() => {
-    if (!inputRef.current || !calendarRef.current) return {};
+    if (!inputRef.current) return {};
     const rect = inputRef.current.getBoundingClientRect();
     return {
-      top: rect.bottom + window.scrollY + 8,
-      left: rect.left + window.scrollX,
+      top: rect.bottom + 8,
+      left: rect.left,
       width: rect.width
     };
   }, []);
@@ -109,7 +121,11 @@ export default function DatePicker({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const isOutsidePicker = pickerRef.current && !pickerRef.current.contains(target);
+      const isOutsideCalendar = calendarRef.current && !calendarRef.current.contains(target);
+
+      if (isOutsidePicker && isOutsideCalendar) {
         handleClose();
       }
     };
@@ -140,9 +156,16 @@ export default function DatePicker({
     if (disabled) return;
     setIsAnimating(false);
     setIsOpen(true);
+    // Set initial month if provided
+    if (initialMonth) {
+      setCurrentMonth(initialMonth);
+    } else if (minDate && minDate > new Date()) {
+      // If minDate is in the future, start from that month
+      setCurrentMonth(new Date(minDate.getFullYear(), minDate.getMonth(), 1));
+    }
     const today = new Date();
     if (!focusedDate) {
-      setFocusedDate(selectedDate || today);
+      setFocusedDate(selectedDate || minDate || today);
     }
     // Focus the calendar after opening
     setTimeout(() => {
@@ -206,6 +229,9 @@ export default function DatePicker({
       d.setHours(23, 59, 59, 999);
       if (d > max) return true;
     }
+    // Check if date is in customDays and marked as disabled
+    const customDay = getCustomDay(date);
+    if (customDay?.disabled) return true;
     return false;
   };
 
@@ -428,14 +454,11 @@ export default function DatePicker({
       ref={calendarRef}
       onKeyDown={handleKeyDown}
       tabIndex={-1}
-      className={`
-        ${usePortal ? 'fixed' : 'absolute'} z-50 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-4 w-80
-        transition-all
-        ${isOpen ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}
-      `}
+      className={`rdp-calendar ${usePortal ? 'rdp-calendar-fixed' : 'rdp-calendar-absolute'} ${isOpen ? 'rdp-calendar-open' : 'rdp-calendar-closed'}`}
       style={{
         ...(usePortal ? position : {}),
-        transitionDuration: `${animationDuration}ms`
+        transitionDuration: `${animationDuration}ms`,
+        width: '20rem'
       }}
       role="dialog"
       aria-label="Date picker"
@@ -443,49 +466,49 @@ export default function DatePicker({
     >
       {/* Quick Select */}
       {showQuickSelect && (
-        <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+        <div className="rdp-quick-select">
+          <p className="rdp-quick-select-title">
             {language === 'en' ? 'Quick Select:' : language === 'tr' ? 'Hızlı Seçim:' : 'Quick:'}
           </p>
-          <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="rdp-quick-select-grid">
             <button
               onClick={() => quickSelectDate('today')}
-              className="px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors text-gray-700 dark:text-gray-300"
+              className="rdp-quick-select-item"
               type="button"
             >
               {t.quickSelect.today}
             </button>
             <button
               onClick={() => quickSelectDate('tomorrow')}
-              className="px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors text-gray-700 dark:text-gray-300"
+              className="rdp-quick-select-item"
               type="button"
             >
               {t.quickSelect.tomorrow}
             </button>
             <button
               onClick={() => quickSelectDate('thisWeek')}
-              className="px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors text-gray-700 dark:text-gray-300"
+              className="rdp-quick-select-item"
               type="button"
             >
               {t.quickSelect.thisWeek}
             </button>
             <button
               onClick={() => quickSelectDate('nextWeek')}
-              className="px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors text-gray-700 dark:text-gray-300"
+              className="rdp-quick-select-item"
               type="button"
             >
               {t.quickSelect.nextWeek}
             </button>
             <button
               onClick={() => quickSelectDate('thisMonth')}
-              className="px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors text-gray-700 dark:text-gray-300"
+              className="rdp-quick-select-item"
               type="button"
             >
               {t.quickSelect.thisMonth}
             </button>
             <button
               onClick={() => quickSelectDate('in7Days')}
-              className="px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors text-gray-700 dark:text-gray-300"
+              className="rdp-quick-select-item"
               type="button"
             >
               {t.quickSelect.in7Days}
@@ -495,60 +518,58 @@ export default function DatePicker({
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="rdp-header">
         <button
           onClick={() => navigateMonth('prev')}
-          className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+          className="rdp-nav-button"
           type="button"
           aria-label="Previous month"
         >
-          <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
         
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-gray-900 dark:text-gray-100">
-            {t.months[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-          </span>
+        <div className="rdp-month-year">
+          {t.months[currentMonth.getMonth()]} {currentMonth.getFullYear()}
         </div>
         
         <button
           onClick={() => navigateMonth('next')}
-          className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+          className="rdp-nav-button"
           type="button"
           aria-label="Next month"
         >
-          <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
       </div>
 
       {/* Weekday Headers */}
-      <div className={`grid gap-1 mb-2 ${showWeekNumbers ? 'grid-cols-8' : 'grid-cols-7'}`}>
+      <div className={`rdp-weekdays ${showWeekNumbers ? 'rdp-weekday-grid-8' : 'rdp-weekday-grid-7'}`}>
         {showWeekNumbers && (
-          <div className="text-center text-xs font-medium text-gray-500 dark:text-gray-400 py-1">
+          <div className="rdp-weekday">
             {t.week}
           </div>
         )}
         {t.weekdaysShort.map(day => (
-          <div key={day} className="text-center text-xs font-medium text-gray-500 dark:text-gray-400 py-1">
+          <div key={day} className="rdp-weekday">
             {day}
           </div>
         ))}
       </div>
 
       {/* Calendar Days */}
-      <div className={`grid gap-1 ${showWeekNumbers ? 'grid-cols-8' : 'grid-cols-7'}`}>
+      <div className={`rdp-days ${showWeekNumbers ? 'rdp-days-grid-8' : 'rdp-days-grid-7'}`}>
         {days.map((day, index) => {
           if (day === null) {
             return (
               <React.Fragment key={`empty-${index}`}>
                 {showWeekNumbers && (
-                  <div key={`empty-week-${index}`} className="aspect-square" />
+                  <div key={`empty-week-${index}`} className="rdp-day-empty" />
                 )}
-                <div key={`empty-day-${index}`} className="aspect-square" />
+                <div key={`empty-day-${index}`} className="rdp-day-empty" />
               </React.Fragment>
             );
           }
@@ -563,10 +584,27 @@ export default function DatePicker({
           const showWeekNum = showWeekNumbers && dayOfWeek === 1; // Show week number on Monday
           const weekNumber = showWeekNum ? getWeekNumber(date) : null;
 
+          let dayClass = 'rdp-day';
+          if (isSelected) {
+            dayClass += ' rdp-day-selected';
+          } else if (isFocused) {
+            dayClass += ' rdp-day-focused';
+          } else if (isToday) {
+            dayClass += ' rdp-day-today';
+          } else {
+            dayClass += ' rdp-day-normal';
+          }
+          if (isDisabled) {
+            dayClass += ' rdp-day-disabled';
+          }
+          if (customDay?.className) {
+            dayClass += ` ${customDay.className}`;
+          }
+
           return (
             <React.Fragment key={`day-wrapper-${index}`}>
               {showWeekNumbers && (
-                <div key={`week-${index}`} className="aspect-square flex items-center justify-center text-xs text-gray-500 dark:text-gray-400 font-medium">
+                <div key={`week-${index}`} className="rdp-week-number-display">
                   {showWeekNum ? weekNumber : ''}
                 </div>
               )}
@@ -574,27 +612,21 @@ export default function DatePicker({
                 key={`day-${index}`}
                 onClick={() => handleDateSelect(day)}
                 disabled={isDisabled}
-                className={`
-                  aspect-square rounded-lg text-sm font-medium transition-all
-                  ${isSelected
-                    ? 'bg-blue-600 dark:bg-blue-500 text-white shadow-md ring-2 ring-blue-300 dark:ring-blue-400'
-                    : isFocused
-                    ? 'ring-2 ring-blue-400 dark:ring-blue-500 ring-offset-1'
-                    : isToday
-                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }
-                  ${customDay ? customDay.className || '' : ''}
-                  ${isDisabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}
-                  focus:outline-none focus:ring-2 focus:ring-blue-500
-                `}
+                className={dayClass}
                 style={customDay?.color ? { color: customDay.color } : {}}
                 type="button"
                 aria-label={`Select ${formatDate(date)}`}
                 aria-selected={isSelected || undefined}
                 aria-disabled={isDisabled}
               >
-                {customDay?.label || day}
+                <div className="rdp-day-content">
+                  <span className="rdp-day-number">{day}</span>
+                  {customDay?.label && (
+                    <span className="rdp-day-custom-label">
+                      {customDay.label}
+                    </span>
+                  )}
+                </div>
               </button>
             </React.Fragment>
           );
@@ -603,42 +635,63 @@ export default function DatePicker({
 
       {/* Time Picker */}
       {showTime && (
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-center gap-4">
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-600 dark:text-gray-400">{t.hours}:</label>
-              <input
-                type="number"
-                min="0"
-                max="23"
-                value={time.hours}
-                onChange={(e) => handleTimeChange('hours', parseInt(e.target.value) || 0)}
-                className="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded text-center focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                aria-label="Hours"
-              />
+        <div className="rdp-time-container">
+          <div className="rdp-time-header">
+            <span>{t.hours}</span>
+            <span>{t.minutes}</span>
+          </div>
+          <div className="rdp-time-columns">
+            <div className="rdp-time-highlight" style={{ color: 'var(--rdp-primary)' }} />
+            <div className="rdp-time-separator">:</div>
+            
+            {/* Hours */}
+            <div className="rdp-time-column" ref={(el) => {
+              if (el && isOpen) {
+                 const selected = el.children[time.hours];
+                 if (selected) {
+                   selected.scrollIntoView({ block: 'center', behavior: 'auto' });
+                 }
+              }
+            }}>
+              {Array.from({ length: 24 }, (_, i) => (
+                <div 
+                  key={i} 
+                  className={`rdp-time-item ${time.hours === i ? 'rdp-time-item-selected' : ''}`}
+                  onClick={() => handleTimeChange('hours', i)}
+                >
+                  {i.toString().padStart(2, '0')}
+                </div>
+              ))}
             </div>
-            <span className="text-gray-400 dark:text-gray-500">:</span>
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-600 dark:text-gray-400">{t.minutes}:</label>
-              <input
-                type="number"
-                min="0"
-                max="59"
-                value={time.minutes}
-                onChange={(e) => handleTimeChange('minutes', parseInt(e.target.value) || 0)}
-                className="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded text-center focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                aria-label="Minutes"
-              />
+            
+            {/* Minutes */}
+            <div className="rdp-time-column" ref={(el) => {
+              if (el && isOpen) {
+                 const selected = el.children[time.minutes];
+                 if (selected) {
+                   selected.scrollIntoView({ block: 'center', behavior: 'auto' });
+                 }
+              }
+            }}>
+              {Array.from({ length: 60 }, (_, i) => (
+                <div 
+                  key={i} 
+                  className={`rdp-time-item ${time.minutes === i ? 'rdp-time-item-selected' : ''}`}
+                  onClick={() => handleTimeChange('minutes', i)}
+                >
+                  {i.toString().padStart(2, '0')}
+                </div>
+              ))}
             </div>
           </div>
         </div>
       )}
 
       {/* Footer Actions */}
-      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+      <div className="rdp-footer">
         <button
           onClick={goToToday}
-          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
+          className="rdp-today-button"
           type="button"
         >
           {t.today}
@@ -646,7 +699,7 @@ export default function DatePicker({
         {selectedDate && (
           <button
             onClick={clearDate}
-            className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors"
+            className="rdp-clear-button"
             type="button"
           >
             {t.clear}
@@ -655,7 +708,7 @@ export default function DatePicker({
         {showTime && (
           <button
             onClick={handleClose}
-            className="px-4 py-1.5 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors text-sm font-medium"
+            className="rdp-ok-button"
             type="button"
           >
             {t.ok}
@@ -666,8 +719,8 @@ export default function DatePicker({
   );
 
   return (
-    <div ref={pickerRef} className={`relative ${className}`}>
-      <div className="relative">
+    <div ref={pickerRef} className={`rdp-container ${className}`}>
+      <div className="rdp-input-wrapper">
         <input
           ref={inputRef}
           type="text"
@@ -682,24 +735,14 @@ export default function DatePicker({
               handleOpen();
             }
           }}
-          className={`
-            w-full px-4 py-2.5 rounded-lg border border-gray-300 
-            bg-white text-gray-900 placeholder-gray-400
-            dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600 dark:placeholder-gray-500
-            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-            dark:focus:ring-blue-400
-            disabled:bg-gray-100 disabled:cursor-not-allowed
-            dark:disabled:bg-gray-700 dark:disabled:text-gray-400
-            cursor-pointer transition-all
-            ${selectedDate ? 'font-medium' : ''}
-          `}
+          className={`rdp-input ${selectedDate ? 'rdp-input-selected' : ''}`}
           aria-label="Date picker input"
           aria-expanded={isOpen}
           aria-haspopup="dialog"
         />
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+        <div className="rdp-input-wrapper-icon">
           <svg
-            className="w-5 h-5 text-gray-400 dark:text-gray-500"
+            className="rdp-input-icon"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -721,4 +764,9 @@ export default function DatePicker({
       )}
     </div>
   );
-}
+});
+
+DatePicker.displayName = 'DatePicker';
+
+export default DatePicker;
+

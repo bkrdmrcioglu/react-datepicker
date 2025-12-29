@@ -1,10 +1,9 @@
-'use client';
-
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { getTranslations, type Language } from '../lib/i18n';
 import type { CustomDay } from './DatePicker';
+import './styles.css';
 
 export interface DateRangePickerProps {
   startDate?: Date | null;
@@ -24,7 +23,12 @@ export interface DateRangePickerProps {
   animationDuration?: number;
 }
 
-export default function DateRangePicker({
+export interface DateRangePickerHandle {
+  openCalendar: () => void;
+  closeCalendar: () => void;
+}
+
+const DateRangePicker = forwardRef<DateRangePickerHandle, DateRangePickerProps>(({
   startDate,
   endDate,
   onChange,
@@ -40,7 +44,7 @@ export default function DateRangePicker({
   usePortal = false,
   portalContainer,
   animationDuration = 200
-}: DateRangePickerProps) {
+}, ref) => {
   const t = getTranslations(language);
   const [isOpen, setIsOpen] = useState(false);
   const [localStartDate, setLocalStartDate] = useState<Date | null>(startDate || null);
@@ -57,6 +61,11 @@ export default function DateRangePicker({
   const inputRef = useRef<HTMLInputElement>(null);
   const calendarRef = useRef<HTMLDivElement>(null);
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    openCalendar: () => handleOpen(),
+    closeCalendar: () => handleClose()
+  }));
 
   // Portal setup
   useEffect(() => {
@@ -84,11 +93,11 @@ export default function DateRangePicker({
 
   // Calculate position for portal
   const getPosition = useCallback(() => {
-    if (!inputRef.current || !calendarRef.current) return {};
+    if (!inputRef.current) return {};
     const rect = inputRef.current.getBoundingClientRect();
     return {
-      top: rect.bottom + window.scrollY + 8,
-      left: rect.left + window.scrollX,
+      top: rect.bottom + 8,
+      left: rect.left,
       width: rect.width
     };
   }, []);
@@ -100,7 +109,11 @@ export default function DateRangePicker({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const isOutsidePicker = pickerRef.current && !pickerRef.current.contains(target);
+      const isOutsideCalendar = calendarRef.current && !calendarRef.current.contains(target);
+
+      if (isOutsidePicker && isOutsideCalendar) {
         handleClose();
       }
     };
@@ -316,62 +329,60 @@ export default function DateRangePicker({
     }
 
     return (
-      <div className="w-full">
+      <div className="rdp-range-calendar-month">
         {/* Header */}
-        <div className="flex items-center justify-between mb-5">
+        <div className="rdp-range-month-header">
           <button
             onClick={() => navigateMonth('prev', side)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all hover:scale-110 active:scale-95"
+            className="rdp-range-nav-button"
             type="button"
             aria-label="Previous month"
           >
-            <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              {t.months[month.getMonth()]} {month.getFullYear()}
-            </span>
+          <div className="rdp-range-month-title">
+            {t.months[month.getMonth()]} {month.getFullYear()}
           </div>
           
           <button
             onClick={() => navigateMonth('next', side)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all hover:scale-110 active:scale-95"
+            className="rdp-range-nav-button"
             type="button"
             aria-label="Next month"
           >
-            <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
 
         {/* Weekday Headers */}
-        <div className={`grid gap-1.5 mb-3 ${showWeekNumbers ? 'grid-cols-8' : 'grid-cols-7'}`}>
+        <div className={`rdp-weekdays ${showWeekNumbers ? 'rdp-weekday-grid-8' : 'rdp-weekday-grid-7'}`} style={{ marginBottom: '0.75rem', gap: '0.375rem' }}>
           {showWeekNumbers && (
-            <div className="text-center text-xs font-semibold text-gray-400 dark:text-gray-500 py-2">
+            <div className="rdp-weekday" style={{ padding: '0.5rem 0', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               {t.week}
             </div>
           )}
           {t.weekdaysShort.map(day => (
-            <div key={day} className="text-center text-xs font-semibold text-gray-500 dark:text-gray-400 py-2 uppercase tracking-wide">
+            <div key={day} className="rdp-weekday" style={{ padding: '0.5rem 0', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               {day}
             </div>
           ))}
         </div>
 
         {/* Calendar Days */}
-        <div className={`grid gap-1.5 ${showWeekNumbers ? 'grid-cols-8' : 'grid-cols-7'}`}>
+        <div className={`rdp-days ${showWeekNumbers ? 'rdp-days-grid-8' : 'rdp-days-grid-7'}`} style={{ gap: '0.375rem' }}>
           {days.map((day, index) => {
             if (day === null) {
               return (
                 <React.Fragment key={`empty-${side}-${index}`}>
                   {showWeekNumbers && (
-                    <div key={`empty-week-${side}-${index}`} className="aspect-square" />
+                    <div key={`empty-week-${side}-${index}`} className="rdp-day-empty" />
                   )}
-                  <div key={`empty-day-${side}-${index}`} className="aspect-square" />
+                  <div key={`empty-day-${side}-${index}`} className="rdp-day-empty" />
                 </React.Fragment>
               );
             }
@@ -393,10 +404,31 @@ export default function DateRangePicker({
             const wouldBeStart = localStartDate && hoveredDate && isSameDay(date, localStartDate < hoveredDate ? localStartDate : hoveredDate);
             const wouldBeEnd = localStartDate && hoveredDate && isSameDay(date, localStartDate < hoveredDate ? hoveredDate : localStartDate);
 
+            let dayClass = 'rdp-day';
+            if (isStart || isEnd) {
+              dayClass += ' rdp-range-day-start rdp-range-day-end';
+            } else if (wouldBeStart || wouldBeEnd) {
+              dayClass += ' rdp-range-day-start rdp-range-day-end';
+            } else if (isInRangeDate) {
+              dayClass += ' rdp-range-day-in-range';
+            } else if (isInHoverRangeDate) {
+              dayClass += ' rdp-range-day-hover';
+            } else if (isToday) {
+              dayClass += ' rdp-day-today';
+            } else {
+              dayClass += ' rdp-day-normal';
+            }
+            if (isDisabled) {
+              dayClass += ' rdp-day-disabled';
+            }
+            if (customDay?.className) {
+              dayClass += ` ${customDay.className}`;
+            }
+
             return (
               <React.Fragment key={`day-wrapper-${side}-${index}`}>
                 {showWeekNumbers && (
-                  <div key={`week-${side}-${index}`} className="aspect-square flex items-center justify-center text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  <div key={`week-${side}-${index}`} className="rdp-week-number-display">
                     {showWeekNum ? weekNumber : ''}
                   </div>
                 )}
@@ -406,31 +438,24 @@ export default function DateRangePicker({
                   onMouseEnter={() => handleDateHover(day, month)}
                   onMouseLeave={handleDateLeave}
                   disabled={isDisabled}
-                  className={`
-                    aspect-square rounded-lg text-sm font-medium transition-all duration-150
-                    ${isStart || isEnd
-                      ? 'bg-blue-600 dark:bg-blue-500 text-white shadow-lg ring-2 ring-blue-300 dark:ring-blue-400 scale-105 z-10 relative'
-                      : wouldBeStart || wouldBeEnd
-                      ? 'bg-blue-500 dark:bg-blue-400 text-white shadow-md ring-2 ring-blue-200 dark:ring-blue-300 scale-105 z-10 relative'
-                      : isInRangeDate
-                      ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
-                      : isInHoverRangeDate
-                      ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                      : isToday
-                      ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold ring-1 ring-blue-200 dark:ring-blue-700'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-105'
-                    }
-                    ${customDay ? customDay.className || '' : ''}
-                    ${isDisabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}
-                    focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
-                  `}
-                  style={customDay?.color ? { color: customDay.color } : {}}
+                  className={dayClass}
+                  style={{
+                    ...(customDay?.color ? { color: customDay.color } : {}),
+                    transition: 'all 0.15s'
+                  }}
                   type="button"
                   aria-label={`Select ${formatDate(date)}`}
                   aria-selected={isStart || isEnd || undefined}
                   aria-disabled={isDisabled}
                 >
-                  {customDay?.label || day}
+                  <div className="rdp-day-content">
+                    <span className="rdp-day-number">{day}</span>
+                    {customDay?.label && (
+                      <span className="rdp-day-custom-label">
+                        {customDay.label}
+                      </span>
+                    )}
+                  </div>
                 </button>
               </React.Fragment>
             );
@@ -447,33 +472,30 @@ export default function DateRangePicker({
     <div
       ref={calendarRef}
       tabIndex={-1}
-      className={`
-        ${usePortal ? 'fixed' : 'absolute'} z-50 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6
-        transition-all ease-in-out backdrop-blur-sm
-        ${isOpen ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}
-      `}
+      className={`rdp-calendar rdp-range-calendar ${usePortal ? 'rdp-calendar-fixed' : 'rdp-calendar-absolute'} ${isOpen ? 'rdp-calendar-open' : 'rdp-calendar-closed'}`}
       style={{
         ...(usePortal ? position : {}),
         transitionDuration: `${animationDuration}ms`,
         width: usePortal ? 'auto' : '680px',
-        minWidth: '680px'
+        minWidth: '680px',
+        padding: '1.5rem'
       }}
       role="dialog"
       aria-label="Date range picker"
       aria-modal="true"
     >
       {/* Two Month Calendars */}
-      <div className="flex gap-8">
+      <div className="rdp-range-calendars-container">
         {renderCalendar(leftMonth, 'left')}
-        <div className="w-px bg-gray-200 dark:bg-gray-700"></div>
+        <div className="rdp-range-calendar-divider"></div>
         {renderCalendar(rightMonth, 'right')}
       </div>
     </div>
   );
 
   return (
-    <div ref={pickerRef} className={`relative ${className}`}>
-      <div className="relative">
+    <div ref={pickerRef} className={`rdp-container ${className}`}>
+      <div className="rdp-input-wrapper">
         <input
           ref={inputRef}
           type="text"
@@ -488,24 +510,14 @@ export default function DateRangePicker({
               handleOpen();
             }
           }}
-          className={`
-            w-full px-4 py-2.5 rounded-lg border border-gray-300 
-            bg-white text-gray-900 placeholder-gray-400
-            dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600 dark:placeholder-gray-500
-            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-            dark:focus:ring-blue-400
-            disabled:bg-gray-100 disabled:cursor-not-allowed
-            dark:disabled:bg-gray-700 dark:disabled:text-gray-400
-            cursor-pointer transition-all
-            ${(localStartDate || localEndDate) ? 'font-medium' : ''}
-          `}
+          className={`rdp-input ${(localStartDate || localEndDate) ? 'rdp-input-selected' : ''}`}
           aria-label="Date range picker input"
           aria-expanded={isOpen}
           aria-haspopup="dialog"
         />
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+        <div className="rdp-input-wrapper-icon">
           <svg
-            className="w-5 h-5 text-gray-400 dark:text-gray-500"
+            className="rdp-input-icon"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -527,4 +539,8 @@ export default function DateRangePicker({
       )}
     </div>
   );
-}
+});
+
+DateRangePicker.displayName = 'DateRangePicker';
+
+export default DateRangePicker;

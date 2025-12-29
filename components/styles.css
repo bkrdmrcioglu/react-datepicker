@@ -1,0 +1,703 @@
+/* React DatePicker Styles - Standalone CSS */
+
+/* Base Variables */
+:root {
+  --rdp-primary: #3b82f6;
+  --rdp-primary-hover: #2563eb;
+  --rdp-bg: #ffffff;
+  --rdp-bg-hover: #f3f4f6;
+  --rdp-text: #111827;
+  --rdp-text-secondary: #6b7280;
+  --rdp-border: #d1d5db;
+  --rdp-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --rdp-radius: 0.5rem;
+  --rdp-transition: all 0.2s ease-in-out;
+}
+
+.dark {
+  --rdp-primary: #60a5fa;
+  --rdp-primary-hover: #3b82f6;
+  --rdp-bg: #1f2937;
+  --rdp-bg-hover: #374151;
+  --rdp-text: #f9fafb;
+  --rdp-text-secondary: #9ca3af;
+  --rdp-border: #4b5563;
+}
+
+/* Container */
+.rdp-container {
+  position: relative;
+}
+
+.rdp-input-wrapper {
+  position: relative;
+}
+
+/* Input */
+.rdp-input {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border-radius: var(--rdp-radius);
+  border: 1px solid var(--rdp-border);
+  background-color: var(--rdp-bg);
+  color: var(--rdp-text);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  cursor: pointer;
+  transition: var(--rdp-transition);
+  outline: none;
+}
+
+.rdp-input::placeholder {
+  color: var(--rdp-text-secondary);
+}
+
+.rdp-input:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--rdp-primary);
+}
+
+.rdp-input:disabled {
+  background-color: var(--rdp-bg-hover);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.rdp-input-icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--rdp-text-secondary);
+}
+
+/* Calendar Container */
+.rdp-calendar {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 50;
+  background-color: var(--rdp-bg);
+  border: 1px solid var(--rdp-border);
+  border-radius: var(--rdp-radius);
+  box-shadow: var(--rdp-shadow);
+  padding: 1rem;
+  min-width: 300px;
+  animation: rdp-fade-in 0.2s ease-out;
+}
+
+@keyframes rdp-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Calendar Header */
+.rdp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.rdp-nav-button {
+  padding: 0.375rem;
+  border-radius: 0.375rem;
+  border: none;
+  background-color: transparent;
+  color: var(--rdp-text);
+  cursor: pointer;
+  transition: var(--rdp-transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rdp-nav-button:hover {
+  background-color: var(--rdp-bg-hover);
+}
+
+.rdp-nav-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.rdp-month-year {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--rdp-text);
+  text-align: center;
+  flex: 1;
+}
+
+/* Weekday Headers */
+.rdp-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.rdp-weekday {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--rdp-text-secondary);
+  padding: 0.5rem 0;
+}
+
+/* Days Grid */
+.rdp-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+}
+
+.rdp-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  border: none;
+  background-color: transparent;
+  color: var(--rdp-text);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--rdp-transition);
+  position: relative;
+}
+
+.rdp-day:hover:not(.rdp-day-disabled):not(.rdp-day-selected) {
+  background-color: var(--rdp-bg-hover);
+}
+
+.rdp-day-selected {
+  background-color: var(--rdp-primary);
+  color: white;
+  font-weight: 600;
+}
+
+.rdp-day-today {
+  font-weight: 700;
+  border: 2px solid var(--rdp-primary);
+}
+
+.rdp-day-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  color: var(--rdp-text-secondary);
+}
+
+.rdp-day-other-month {
+  opacity: 0.3;
+}
+
+/* Week Numbers */
+.rdp-week-number {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--rdp-text-secondary);
+  padding: 0.5rem 0.25rem;
+}
+
+/* Quick Select */
+.rdp-quick-select {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rdp-border);
+}
+
+.rdp-quick-select-title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--rdp-text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.rdp-quick-select-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.rdp-quick-select-item {
+  padding: 0.5rem;
+  text-align: left;
+  border-radius: 0.375rem;
+  border: none;
+  background-color: transparent;
+  color: var(--rdp-text);
+  cursor: pointer;
+  transition: var(--rdp-transition);
+}
+
+.rdp-quick-select-item:hover {
+  background-color: var(--rdp-bg-hover);
+}
+
+/* Time Picker */
+.rdp-time-picker {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rdp-border);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rdp-time-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--rdp-border);
+  border-radius: 0.375rem;
+  background-color: var(--rdp-bg);
+  color: var(--rdp-text);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.rdp-time-input:focus {
+  outline: none;
+  border-color: var(--rdp-primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Footer */
+.rdp-footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rdp-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rdp-clear-button {
+  font-size: 0.875rem;
+  color: #dc2626;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--rdp-transition);
+}
+
+.rdp-clear-button:hover {
+  color: #b91c1c;
+}
+
+.dark .rdp-clear-button {
+  color: #f87171;
+}
+
+.dark .rdp-clear-button:hover {
+  color: #ef4444;
+}
+
+.rdp-ok-button {
+  padding: 0.375rem 1rem;
+  background-color: var(--rdp-primary);
+  color: white;
+  border: none;
+  border-radius: var(--rdp-radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--rdp-transition);
+}
+
+.rdp-ok-button:hover {
+  background-color: var(--rdp-primary-hover);
+}
+
+/* Custom Day Labels */
+.rdp-day-label {
+  position: absolute;
+  bottom: 0.125rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.625rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Range Picker Specific */
+.rdp-range-in-range {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.rdp-range-start,
+.rdp-range-end {
+  background-color: var(--rdp-primary);
+  color: white;
+  font-weight: 600;
+}
+
+.rdp-range-start:hover,
+.rdp-range-end:hover {
+  background-color: var(--rdp-primary-hover);
+}
+
+/* Portal Mode */
+.rdp-portal {
+  position: fixed;
+  z-index: 9999;
+}
+
+/* Empty Day */
+.rdp-day-empty {
+  visibility: hidden;
+}
+
+/* Calendar States */
+.rdp-calendar-open {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.rdp-calendar-closed {
+  opacity: 0;
+  transform: scale(0.95);
+  pointer-events: none;
+}
+
+.rdp-calendar-fixed {
+  position: fixed;
+}
+
+.rdp-calendar-absolute {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+}
+
+/* Weekday Grid */
+.rdp-weekday-grid {
+  display: grid;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.rdp-weekday-grid-7 {
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.rdp-weekday-grid-8 {
+  grid-template-columns: repeat(8, 1fr);
+}
+
+/* Days Grid */
+.rdp-days-grid {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.rdp-days-grid-7 {
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.rdp-days-grid-8 {
+  grid-template-columns: repeat(8, 1fr);
+}
+
+/* Day States */
+.rdp-day-selected {
+  background-color: var(--rdp-primary);
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.dark .rdp-day-selected {
+  background-color: var(--rdp-primary);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+.rdp-day-focused {
+  outline: 2px solid var(--rdp-primary);
+  outline-offset: 2px;
+}
+
+.rdp-day-today {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--rdp-primary);
+  font-weight: 700;
+}
+
+.dark .rdp-day-today {
+  background-color: rgba(96, 165, 250, 0.2);
+  color: var(--rdp-primary);
+}
+
+.rdp-day-normal {
+  color: var(--rdp-text);
+}
+
+.rdp-day-normal:hover {
+  background-color: var(--rdp-bg-hover);
+}
+
+.rdp-day-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  color: var(--rdp-text-secondary);
+}
+
+.rdp-day-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.rdp-day-number {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.rdp-day-custom-label {
+  font-size: 0.625rem;
+  font-weight: 400;
+  opacity: 0.75;
+  line-height: 1.2;
+  margin-top: 0.125rem;
+}
+
+/* Modern Scrollable Time Picker */
+.rdp-time-container {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rdp-border);
+}
+
+.rdp-time-header {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--rdp-text-secondary);
+  text-transform: uppercase;
+}
+
+.rdp-time-columns {
+  display: flex;
+  height: 160px;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--rdp-bg-hover);
+  border-radius: var(--rdp-radius);
+  /* Gradient Masks for 3D effect */
+  mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+}
+
+/* Common Column Styles */
+.rdp-time-column {
+  flex: 1;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  padding: 60px 0; /* Padding to allow top/bottom items to reach center */
+}
+
+.rdp-time-column::-webkit-scrollbar {
+  display: none;
+}
+
+.rdp-time-item {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  color: var(--rdp-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.rdp-time-item:hover {
+  color: var(--rdp-text);
+  background-color: rgba(0,0,0,0.02);
+}
+
+.rdp-time-item-selected {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--rdp-primary);
+  transform: scale(1.1);
+}
+
+/* Center Highlight Bar */
+.rdp-time-highlight {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  transform: translateY(-50%);
+  background-color: currentColor;
+  opacity: 0.05;
+  pointer-events: none;
+  border-top: 1px solid var(--rdp-border);
+  border-bottom: 1px solid var(--rdp-border);
+}
+
+.rdp-time-separator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--rdp-text);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.dark .rdp-time-columns {
+  background-color: rgba(0,0,0,0.2);
+}
+
+/* Footer */
+.rdp-footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rdp-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rdp-today-button {
+  font-size: 0.875rem;
+  color: var(--rdp-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--rdp-transition);
+}
+
+.rdp-today-button:hover {
+  color: var(--rdp-primary-hover);
+}
+
+/* Input States */
+.rdp-input-selected {
+  font-weight: 500;
+}
+
+.rdp-input-wrapper-icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* Week Number Display */
+.rdp-week-number-display {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: var(--rdp-text-secondary);
+  font-weight: 500;
+}
+
+/* Range Picker Specific Styles */
+.rdp-range-calendar {
+  min-width: 680px;
+}
+
+.rdp-range-calendars-container {
+  display: flex;
+  gap: 2rem;
+}
+
+.rdp-range-calendar-divider {
+  width: 1px;
+  background-color: var(--rdp-border);
+}
+
+.rdp-range-calendar-month {
+  flex: 1;
+  width: 100%;
+}
+
+.rdp-range-month-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.rdp-range-month-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--rdp-text);
+}
+
+.rdp-range-nav-button {
+  padding: 0.5rem;
+  border-radius: var(--rdp-radius);
+  border: none;
+  background-color: transparent;
+  color: var(--rdp-text);
+  cursor: pointer;
+  transition: var(--rdp-transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rdp-range-nav-button:hover {
+  background-color: var(--rdp-bg-hover);
+  transform: scale(1.1);
+}
+
+.rdp-range-nav-button:active {
+  transform: scale(0.95);
+}
+
+.rdp-range-nav-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.rdp-range-day-in-range {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--rdp-text);
+}
+
+.rdp-range-day-start,
+.rdp-range-day-end {
+  background-color: var(--rdp-primary);
+  color: white;
+  font-weight: 600;
+}
+
+.rdp-range-day-start:hover,
+.rdp-range-day-end:hover {
+  background-color: var(--rdp-primary-hover);
+}
+
+.rdp-range-day-hover {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+

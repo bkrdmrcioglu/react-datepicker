@@ -1,6 +1,6 @@
 # React DatePicker
 
-Modern, customizable, and user-friendly React DatePicker component. Built with Next.js and Tailwind CSS.
+Modern, customizable, and user-friendly React DatePicker component with dark mode and multi-language support.
 
 [![View on GitHub](https://img.shields.io/badge/GitHub-View%20on%20GitHub-blue?logo=github)](https://github.com/bkrdmrcioglu/react-datepicker)
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20Demo-green?logo=vercel)](https://react-datepicker-mu.vercel.app)
@@ -10,14 +10,20 @@ Modern, customizable, and user-friendly React DatePicker component. Built with N
 - ✅ Modern and elegant design
 - ✅ **Dark Mode** - Full dark mode support
 - ✅ **11 Language Support** - English, Turkish, German, French, Spanish, Italian, Portuguese, Russian, Japanese, Chinese, Arabic
+- ✅ **Theme System** - 4 preset themes + custom theme support
+- ✅ **Storybook** - Interactive component showcase
+- ✅ **API Documentation** - Complete API reference
+- ✅ **Test Coverage** - 90+ unit tests
 - ✅ Date selection
 - ✅ Date and time selection
 - ✅ Date range selection (DateRangePicker)
 - ✅ Min/Max date constraints
+- ✅ Time Picker (TimePicker)
 - ✅ Disableable
 - ✅ TypeScript support
 - ✅ Fully customizable
 - ✅ Responsive design
+
 
 ## 📦 Installation
 
@@ -33,24 +39,15 @@ pnpm add react-datepicker-bkrdmrcioglu
 
 ### Requirements
 
-This package uses Tailwind CSS. You must have Tailwind CSS installed in your project:
+- React 16.8+
+- React DOM 16.8+
 
-```bash
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
-```
+### Import Styles
 
-Add this to your `tailwind.config.js` file:
+The component comes with its own CSS. Import it in your root layout or entry file:
 
-```js
-module.exports = {
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "./node_modules/react-datepicker-bkrdmrcioglu/**/*.{js,jsx,ts,tsx}"
-  ],
-  darkMode: 'class', // For dark mode
-  // ... your other settings
-}
+```tsx
+import 'react-datepicker-bkrdmrcioglu/dist/style.css';
 ```
 
 ## 🏃 Development (For This Repo)
@@ -173,6 +170,25 @@ function MyComponent() {
 }
 ```
 
+### Time Picker
+
+```tsx
+import { TimePicker } from 'react-datepicker-bkrdmrcioglu';
+import { useState } from 'react';
+
+function MyComponent() {
+  const [time, setTime] = useState<string | null>(null);
+
+  return (
+    <TimePicker
+      value={time}
+      onChange={setTime}
+      placeholder="Select time..."
+    />
+  );
+}
+```
+
 ## 🔧 API Reference
 
 ### DatePicker Props
@@ -205,7 +221,7 @@ function MyComponent() {
 
 ## 🎨 Customization
 
-Components are built using Tailwind CSS. You can customize the styles by modifying the className properties in the `components/DatePicker.tsx` file.
+Components are highly customizable through props, themes, and CSS.
 
 ### Dark Mode
 
@@ -252,7 +268,76 @@ function MyComponent() {
 }
 ```
 
+### Theme System
+
+Customize the appearance of DatePicker components using the built-in theme system:
+
+```tsx
+import { ThemeProvider, DatePicker } from 'react-datepicker-bkrdmrcioglu';
+
+function App() {
+  return (
+    <ThemeProvider defaultTheme="material">
+      <DatePicker value={date} onChange={setDate} />
+    </ThemeProvider>
+  );
+}
+```
+
+#### Available Themes
+
+- `default` - Clean and modern design
+- `material` - Google Material Design inspired
+- `minimal` - Simple and clean
+- `glassmorphism` - Modern glass effect
+
+#### Custom Theme
+
+```tsx
+import { ThemeProvider } from 'react-datepicker-bkrdmrcioglu';
+import type { Theme } from 'react-datepicker-bkrdmrcioglu';
+
+const customTheme: Theme = {
+  name: 'Custom',
+  colors: {
+    primary: '#8b5cf6',
+    background: '#ffffff',
+    // ... other colors
+  },
+  // ... other theme properties
+};
+
+function App() {
+  return (
+    <ThemeProvider defaultTheme={customTheme}>
+      <DatePicker />
+    </ThemeProvider>
+  );
+}
+```
+
+## 📚 Documentation
+
+- **Live Demo**: [https://react-datepicker-mu.vercel.app](https://react-datepicker-mu.vercel.app)
+- **API Reference**: `/docs/api` - Complete API documentation
+- **Theme Playground**: `/docs/themes` - Interactive theme customization
+- **Storybook**: Run `npm run storybook` for interactive component showcase
+
+## 🧪 Testing
+
+```bash
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
+```
+
 ## 📝 License
+
 
 MIT License - Feel free to use it.
 
