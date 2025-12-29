@@ -219,6 +219,18 @@ function MyComponent() {
 | `disabled` | `boolean` | `false` | Disable the picker |
 | `className` | `string` | `""` | Additional CSS classes |
 
+### TimePicker Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `string \| null` | `undefined` | Selected time (HH:MM) |
+| `onChange` | `(time: string \| null) => void` | `undefined` | Called when time changes |
+| `placeholder` | `string` | `"Select time..."` | Placeholder text |
+| `disabled` | `boolean` | `false` | Disable the picker |
+| `className` | `string` | `""` | Additional CSS classes |
+| `format` | `"24h" \| "12h"` | `"24h"` | Time format (currently 24h) |
+| `language` | `Language` | `"en"` | Language selection |
+
 ## 🎨 Customization
 
 Components are highly customizable through props, themes, and CSS.
